@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import type { Species } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -25,6 +24,17 @@ const Loader: React.FC<{ message: string }> = ({ message }) => (
     </div>
 );
 
+const ApiKeyWarning = () => (
+    <div className="min-h-screen bg-slate-900 text-white grid-background flex items-center justify-center p-4">
+        <div className="text-center text-slate-300 max-w-2xl mx-auto p-8 glass-card rounded-lg">
+            <h1 className="text-3xl font-orbitron holographic-text mb-4">Configuration Error</h1>
+            <p className="text-lg">The <code className="bg-slate-700 p-1 rounded text-amber-300">API_KEY</code> is missing.</p>
+            <p className="mt-4">This application requires a Google Gemini API key to function. Please set the <code>API_KEY</code> environment variable in your deployment configuration.</p>
+            <p className="mt-2 text-sm text-slate-400">Refer to the README.md for more information on setting up the project.</p>
+        </div>
+    </div>
+);
+
 const App: React.FC = () => {
     const [appState, setAppState] = useState<AppState>('idle');
     const [displayMode, setDisplayMode] = useState<DisplayMode>('species');
@@ -33,6 +43,11 @@ const App: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [favorites, setFavorites] = useLocalStorage<Species[]>('xenoform-favorites', []);
     const [mutationMode, setMutationMode] = useState(false);
+    
+    // Halt the app if the API key is not configured.
+    if (!process.env.API_KEY) {
+        return <ApiKeyWarning />;
+    }
 
     const handleGenerateSpecies = useCallback(async () => {
         setAppState('loading');
@@ -89,7 +104,8 @@ const App: React.FC = () => {
 
     const handleViewFavorite = (species: Species) => {
         setDisplayMode('species');
-        setCurrentSpecies({ ...species, imageUrl: 'https://picsum.photos/1280/720' }); // Note: Images aren't stored, using placeholder
+        // Set imageUrl to null for favorites as images are not stored in localStorage
+        setCurrentSpecies({ ...species, imageUrl: null });
         setAppState('displaying');
         window.scrollTo(0, 0);
     }

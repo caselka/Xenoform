@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Species } from '../types';
 import { SaveIcon, ExportIcon, CopyIcon } from './Icons';
@@ -10,9 +9,9 @@ interface SpeciesCardProps {
   isFavorite: boolean;
 }
 
-const ImageLoader: React.FC = () => (
-    <div className="w-full h-full bg-slate-800 animate-pulse flex items-center justify-center">
-        <div className="text-cyan-400 font-orbitron">Rendering Specimen...</div>
+const ImageLoader: React.FC<{ message: string }> = ({ message }) => (
+    <div className="w-full h-full bg-slate-800 animate-pulse flex items-center justify-center p-4">
+        <div className="text-cyan-400 font-orbitron text-center">{message}</div>
     </div>
 );
 
@@ -67,7 +66,7 @@ const SpeciesCard: React.FC<SpeciesCardProps> = ({ species, imageUrl, onSave, is
           {imageUrl ? (
             <img src={imageUrl} alt={`Illustration of ${species.name}`} className="w-full h-full object-cover" />
           ) : (
-            <ImageLoader/>
+            <ImageLoader message={isFavorite ? "Image data is not stored with Favorites." : "Rendering Specimen..."}/>
           )}
         </div>
         <div className="p-6 flex flex-col space-y-4">
